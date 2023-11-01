@@ -12,12 +12,34 @@ server.on('connection', (socket) => {
 
   const clientId = clients.length + 1;
 
+  clients.forEach((client) => {
+    client.socket.write(`User ${clientId} joined!`);
+  });
+
   socket.write(`id-${clientId}`);
 
   socket.on('data', (message) => {
-    const id = clients.forEach((client) => {
+    clients.forEach((client) => {
       client.socket.write(`> User ${clientId}: ${message}`);
     });
+  });
+
+  socket.on('end', () => {
+    const index = clients.findIndex((client) => client.id === clientId);
+    clients.splice(index, 1);
+    clients.forEach((client) => {
+      client.socket.write(`User ${clientId} left the room!`);
+    });
+  });
+
+  socket.on('error', (error) => {
+    if (error.code === 'ECONNRESET') {
+      const index = clients.findIndex((client) => client.id === clientId);
+      clients.splice(index, 1);
+      clients.forEach((client) => {
+        client.socket.write(`User ${clientId} left the room!`);
+      });
+    }
   });
 
   clients.push({ socket, id: clientId.toString() });
