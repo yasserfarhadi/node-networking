@@ -39,13 +39,17 @@ const client = net.createConnection(
       await clearLine(0);
       client.write(message);
     };
+    client.on('data', async (data) => {
+      console.log();
+      await moveCursor(0, -1);
+      await clearLine(0);
+      console.log(data.toString('utf-8'));
+      ask();
+    });
+
     ask();
   }
 );
-
-client.on('data', (data) => {
-  console.log(data.toString('utf-8'));
-});
 
 client.on('close', () => {
   console.log('closed');
