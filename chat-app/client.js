@@ -24,6 +24,7 @@ const moveCursor = async (dx, dy) => {
 
 const PORT = 8080;
 const ADDRESS = '127.0.0.1';
+let id;
 
 const client = net.createConnection(
   {
@@ -43,7 +44,13 @@ const client = net.createConnection(
       console.log();
       await moveCursor(0, -1);
       await clearLine(0);
-      console.log(data.toString('utf-8'));
+      const strData = data.toString('utf-8');
+      if (strData.substring(0, 3) === 'id-') {
+        id = strData.substring(3);
+        console.log('Your id is:' + id + '!\n');
+      } else {
+        console.log(strData);
+      }
       ask();
     });
 
